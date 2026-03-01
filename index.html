@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARYAVARTA | Eternal Bharat Archive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:ital,wght@0,400;1,600&family=Mukta:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --maroon: #580000;
+            --dark: #080808;
+            --glass: rgba(255, 255, 255, 0.05);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        * { box-sizing: border-box; scroll-behavior: smooth; }
+        body { margin: 0; background: var(--dark); color: #e0e0e0; font-family: 'Lora', serif; overflow-x: hidden; }
+
+        /* --- Navigation Bar --- */
+        nav {
+            position: fixed; top: 0; width: 100%; display: flex; justify-content: center;
+            padding: 15px; background: rgba(0,0,0,0.98); border-bottom: 2px solid var(--gold);
+            z-index: 1000; gap: 15px; flex-wrap: wrap;
+        }
+        nav button { 
+            background: none; border: none; color: var(--gold); font-family: 'Cinzel'; 
+            font-size: 0.8rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+            padding: 10px; transition: var(--transition);
+        }
+        nav button:hover { color: #fff; transform: scale(1.1); text-shadow: 0 0 10px var(--gold); }
+        nav button.active { border-bottom: 2px solid #fff; color: #fff; }
+
+        /* --- Hero --- */
+        .hero {
+            height: 50vh; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; background: linear-gradient(rgba(0,0,0,0.7), var(--dark)),
+            url('https://images.unsplash.com/photo-1548013146-72479768bbaa?q=80&w=1600');
+            background-size: cover; background-position: center; text-align: center;
+        }
+        .hero h1 { font-family: 'Cinzel'; font-size: clamp(2rem, 8vw, 4.5rem); color: var(--gold); margin: 0; }
+
+        /* --- Search Bar --- */
+        .search-container { max-width: 600px; margin: -25px auto 40px; position: relative; z-index: 10; padding: 0 20px; }
+        #searchInput {
+            width: 100%; padding: 15px 25px; border-radius: 50px; border: 2px solid var(--gold);
+            background: #151515; color: white; font-size: 1rem; outline: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* --- Main Content Area --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; min-height: 60vh; }
+        
+        /* Grid Mode */
+        .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        
+        .card {
+            background: var(--glass); border: 1px solid rgba(212, 175, 55, 0.1);
+            border-radius: 12px; overflow: hidden; transition: var(--transition);
+        }
+        .card:hover { transform: translateY(-8px); border-color: var(--gold); background: rgba(212,175,55,0.08); }
+        .card img { width: 100%; height: 220px; object-fit: cover; }
+        .card-body { padding: 20px; }
+        .card h2 { font-family: 'Cinzel'; color: var(--gold); margin: 0 0 10px; font-size: 1.5rem; }
+        .card p { font-size: 0.95rem; line-height: 1.6; color: #ccc; }
+        
+        /* Timeline Mode */
+        .timeline-container { display: flex; overflow-x: auto; padding: 40px 0; gap: 20px; scrollbar-width: thin; }
+        .timeline-card { min-width: 300px; border-left: 3px solid var(--gold); padding: 20px; background: var(--glass); }
+
+        /* Static Page Style */
+        .static-page { background: var(--glass); padding: 40px; border-radius: 15px; border: 1px solid var(--gold); animation: fadeIn 0.5s ease; }
+        .static-page h2 { font-family: 'Cinzel'; color: var(--gold); font-size: 2.5rem; }
+
+        footer { text-align: center; padding: 40px; border-top: 1px solid #222; margin-top: 50px; font-family: 'Cinzel'; color: var(--gold); opacity: 0.7; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <nav id="mainNav">
+        <button onclick="renderView('mythology')" id="btn-mythology">Mythology</button>
+        <button onclick="renderView('history')" id="btn-history">History</button>
+        <button onclick="renderView('science')" id="btn-science">Vigyan</button>
+        <button onclick="renderView('strategy')" id="btn-strategy">Strategy</button>
+        <button onclick="renderView('mission')" id="btn-mission">Mission</button>
+        <button onclick="renderView('privacy')" id="btn-privacy">Privacy</button>
+    </nav>
+
+    <section class="hero">
+        <h1 id="hero-title">ARYAVARTA</h1>
+        <p style="font-family: 'Cinzel'; letter-spacing: 3px; color: #aaa;">Digital Archive of the Eternal Bharat</p>
+    </section>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search for Kings, Mantras, or Inventions..." onkeyup="liveSearch()">
+    </div>
+
+    <div class="container" id="content-container">
+        </div>
+
+    <footer>
+        DHARMO RAKSHATI RAKSHITAH
+    </footer>
+
+    <script>
+        // --- DATASET ---
+        const portalData = {
+            mythology: [
+                { title: 'The Ramayana', sub: 'The Ideal Path', text: 'Valmiki’s epic detailing the life of Rama, the Maryada Purushottam, and the battle against Ravana.', img: 'https://images.unsplash.com/photo-1620619767323-b95a89183081?q=80&w=800' },
+                { title: 'The Mahabharata', sub: 'The Great Chronicle', text: 'The story of the Kurukshetra War and the delivery of the Bhagavad Gita by Krishna to Arjuna.', img: 'https://images.unsplash.com/photo-1590050752117-23a9d5f27918?q=80&w=800' },
+                { title: 'Puranic Cosmology', sub: '14 Dimensions', text: 'Exploration of the Talas and Lokas, the multidimensional universe described in Vedic texts.', img: 'https://images.unsplash.com/photo-1614728263952-84ea256f9679?q=80&w=800' }
+            ],
+            history: [
+                { title: 'Indus Valley', sub: '3300 BCE', text: 'Harappa and Mohenjo-Daro: The pinnacle of ancient urban planning and sanitation.', img: 'https://images.unsplash.com/photo-1603501007892-0b898950d268?q=80&w=800' },
+                { title: 'Mauryan Empire', sub: '322 BCE', text: 'Chandragupta and Ashoka the Great: Unifying the subcontinent under one flag.', img: 'https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?q=80&w=800' },
+                { title: 'The Golden Age', sub: '319 CE', text: 'The Gupta Empire: An era of unprecedented growth in science, math, and classical arts.', img: 'https://images.unsplash.com/photo-1590737130107-1c6676839556?q=80&w=800' }
+            ],
+            science: [
+                { title: 'Shunya (Zero)', sub: 'Aryabhata', text: 'How Indian mathematicians defined zero as a digit and revolutionized global mathematics.', img: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=800' },
+                { title: 'Ayurveda', sub: 'Sushruta & Charaka', text: 'The science of longevity and surgery, including ancient cataract and plastic surgeries.', img: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=800' },
+                { title: 'Vedic Astronomy', sub: 'Surya Siddhanta', text: 'Precise calculations of planetary orbits and the speed of light centuries before the West.', img: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=800' }
+            ],
+            strategy: [
+                { title: 'Arthashastra', sub: 'Statecraft', text: 'Chanakya’s ultimate manual on governance, economy, spies, and foreign policy.', img: 'https://images.unsplash.com/photo-1610016302534-6f67f1c968d8?q=80&w=800' },
+                { title: 'Dhanurveda', sub: 'Military Science', text: 'The ancient Indian science of warfare, weaponry (Astras), and strategic formations (Vyuhas).', img: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=800' }
+            ]
+        };
+
+        // --- CORE NAVIGATION ENGINE ---
+        function renderView(view) {
+            const container = document.getElementById('content-container');
+            const navButtons = document.querySelectorAll('nav button');
+            
+            // UI Feedback: Set Active Button
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + view).classList.add('active');
+
+            // Handle Static Content (Mission/Privacy)
+            if (view === 'mission') {
+                container.innerHTML = `
+                    <div class="static-page">
+                        <h2>Our Mission</h2>
+                        <p>Aryavarta is a non-commercial educational project built to archive the scientific, historical, and spiritual heritage of Ancient Bharat. We aim to present evidence-based history alongside narrated mythology for a holistic understanding of the past.</p>
+                        <ul style="color:var(--gold)">
+                            <li>Academic Accuracy</li>
+                            <li>Preservation of Primary Sanskrit Texts</li>
+                            <li>Interactive Visual Learning</li>
+                        </ul>
+                    </div>`;
+                return;
+            }
+
+            if (view === 'privacy') {
+                container.innerHTML = `
+                    <div class="static-page">
+                        <h2>Privacy & Ethics</h2>
+                        <p>This is a static portal. We do not track users, collect cookies, or store any personal information. All images used are sourced from open-source educational databases.</p>
+                        <p>Ethics: We present the Puranas as cultural narratives and archaeological findings as physical evidence, maintaining a clear distinction between lore and history.</p>
+                    </div>`;
+                return;
+            }
+
+            // Handle Dynamic Data Content
+            const currentData = portalData[view];
+            let html = `<div class="grid-layout">`;
+            
+            currentData.forEach(item => {
+                html += `
+                    <div class="card">
+                        <img src="${item.img}" alt="${item.title}">
+                        <div class="card-body">
+                            <h2>${item.title}</h2>
+                            <h4 style="color:var(--gold); margin:0;">${item.sub}</h4>
+                            <p>${item.text}</p>
+                        </div>
+                    </div>`;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // --- SEARCH ENGINE ---
+        function liveSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const container = document.getElementById('content-container');
+            let results = [];
+
+            // Search through all dynamic categories
+            Object.keys(portalData).forEach(cat => {
+                const found = portalData[cat].filter(i => 
+                    i.title.toLowerCase().includes(query) || 
+                    i.text.toLowerCase().includes(query)
+                );
+                results = [...results, ...found];
+            });
+
+            if(results.length === 0) {
+                container.innerHTML = `<h2 style="text-align:center; color:var(--gold);">No ancient records found for "${query}"</h2>`;
+                return;
+            }
+
+            let html = `<div class="grid-layout">`;
+            results.forEach(item => {
+                html += `
+                    <div class="card">
+                        <img src="${item.img}" alt="${item.title}">
+                        <div class="card-body">
+                            <h2>${item.title}</h2>
+                            <p>${item.text}</p>
+                        </div>
+                    </div>`;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // --- INITIALIZE ---
+        window.onload = () => renderView('mythology');
+    </script>
+</body>
+</html>
